@@ -1,5 +1,5 @@
 import { injectable, inject } from "tsyringe";
-import Vendors from "../entities/Vendors";
+import Sequelize from "sequelize";
 import IODataParser, {
   IODataParserProivder,
 } from "../interfaces/common-interfaces/IODataParser";
@@ -23,7 +23,10 @@ export default class VendorService
     super(iVendortData, iODataParser);
     this.iVendorData = iVendortData;
   }
-  import = async (vendors: ImportVendors[]) => {
-    return this.iVendorData.import(vendors);
+  import = async (
+    vendors: ImportVendors[],
+    transaction?: Sequelize.Transaction
+  ) => {
+    return this.iVendorData.import(vendors, transaction);
   };
 }

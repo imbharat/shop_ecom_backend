@@ -23,6 +23,9 @@ Vendors.init(
     city: {
       type: DataTypes.STRING,
     },
+    pincode: {
+      type: DataTypes.STRING,
+    },
     state: {
       type: DataTypes.STRING,
     },

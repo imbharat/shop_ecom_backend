@@ -4,6 +4,7 @@ import IBaseService, {
   IBaseServiceProivder,
 } from "../interfaces/service-interfaces/IBaseService";
 import { OData } from "../types/OData";
+import { SContext } from "../types/SContext";
 
 @autoInjectable()
 export default class BaseController {
@@ -15,10 +16,11 @@ export default class BaseController {
   getOData = async (
     req: Request,
     res: Response,
-    odata: (odata: OData) => string,
-    odata_count: ($filter: string) => string
+    odata: (odata: OData, paramsWhereClaue: string) => string,
+    odata_count: ($filter: string, paramsWhereClaue: string) => string
   ) => {
     const response = await this.iBaseService.getOData(
+      req.params,
       req.query,
       odata,
       odata_count
@@ -27,7 +29,11 @@ export default class BaseController {
   };
 
   get = async (req: Request, res: Response) => {
-    const response = await this.iBaseService.get();
+    const context: SContext = {
+      business_id: 1,
+      user_id: 1,
+    };
+    const response = await this.iBaseService.get(context, {});
     res.send(response);
   };
 
@@ -37,18 +43,33 @@ export default class BaseController {
   };
 
   add = async (req: Request, res: Response) => {
-    const response = await this.iBaseService.add(req.body);
+    const context: SContext = {
+      business_id: 1,
+      user_id: 1,
+    };
+    const response = await this.iBaseService.add(req.body, context);
     res.send(response);
   };
 
   update = async (req: Request, res: Response) => {
-    const response = await this.iBaseService.update(req.params.id, req.body);
-    res.send(response);
+    const context: SContext = {
+      business_id: 1,
+      user_id: 1,
+    };
+    const response = await this.iBaseService.update(
+      req.params,
+      req.body,
+      context
+    );
+    res.status(200).send(response);
   };
 
   delete = async (req: Request, res: Response) => {
-    const business_id = 1;
-    const response = await this.iBaseService.delete(req.params, business_id);
+    const context: SContext = {
+      business_id: 1,
+      user_id: 1,
+    };
+    const response = await this.iBaseService.delete(req.params, context);
     res.status(200).send({
       count: response,
     });

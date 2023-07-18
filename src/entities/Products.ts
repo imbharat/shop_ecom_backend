@@ -17,7 +17,10 @@ Products.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    price: {
+    cost_price: {
+      type: DataTypes.FLOAT,
+    },
+    sell_price: {
       type: DataTypes.FLOAT,
     },
     type: {
@@ -36,10 +39,27 @@ Products.init(
     imei: {
       type: DataTypes.STRING,
     },
-    qc: {
+    physical_qc: {
+      type: DataTypes.INTEGER,
+    },
+    screen_qc: {
+      type: DataTypes.INTEGER,
+    },
+    ram: {
+      type: DataTypes.INTEGER,
+    },
+    storage: {
       type: DataTypes.INTEGER,
     },
     location: {
+      type: DataTypes.INTEGER,
+    },
+    status: {
+      type: DataTypes.INTEGER,
+      defaultValue: 1,
+      allowNull: false,
+    },
+    order_id: {
       type: DataTypes.INTEGER,
     },
     created_by: {
@@ -59,6 +79,13 @@ Products.init(
     sequelize,
     underscored: true,
     modelName: "products",
+    indexes: [
+      {
+        name: "pid_business",
+        unique: true,
+        fields: ["product_id", "business_id"],
+      },
+    ],
   }
 );
 

@@ -27,3 +27,5 @@ QCs.init(
     modelName: "qcs",
   }
 );
+
+QCs.sync();

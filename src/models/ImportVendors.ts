@@ -1,8 +1,9 @@
 type ImportVendors = {
   vendor_name: string;
+} & {
+  business_id: number;
   created_by: number;
   modified_by: number;
-  business_id: number;
 };
 
 export default ImportVendors;

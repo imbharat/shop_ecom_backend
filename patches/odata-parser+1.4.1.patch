@@ -1,0 +1,45 @@
+diff --git a/node_modules/odata-parser/lib/odata-parser.js b/node_modules/odata-parser/lib/odata-parser.js
+index b73d1f3..ab89514 100644
+--- a/node_modules/odata-parser/lib/odata-parser.js
++++ b/node_modules/odata-parser/lib/odata-parser.js
+@@ -2749,14 +2749,14 @@ module.exports = (function(){
+           pos = pos1;
+         }
+         if (result0 !== null) {
+-          result0 = (function(offset, a, list) {
+-                                            if (list === "") list = [];
+-                                            if (require('util').isArray(list[0])) {
+-                                                list = list[0];
+-                                            }
+-                                            list.unshift(a);
+-                                            return list.join('.');
+-                                        })(pos0, result0[0], result0[1]);
++          result0 = (function(prefix, postfix) {
++                      if(!postfix){
++                        return prefix;
++                      }
++                      else {
++                        return [prefix, postfix].join(".");
++                      }
++                    })(result0[0], result0[1]);
+         }
+         if (result0 === null) {
+           pos = pos0;
+@@ -4202,6 +4202,17 @@ module.exports = (function(){
+                   matchFailed("\"IsOf\"");
+                 }
+               }
++              if (result0 === null) {
++                if (input.substr(pos, 8) === "contains") {
++                  result0 = "contains";
++                  pos += 8;
++                } else {
++                  result0 = null;
++                  if (reportFailures === 0) {
++                    matchFailed("\"contains\"");
++                  }
++                }
++              }
+             }
+           }
+         }

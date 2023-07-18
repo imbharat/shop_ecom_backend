@@ -3,9 +3,10 @@ import { OData } from "../../types/OData";
 export default interface IODataParser {
   odata: OData;
   parseToSQL(
-    queryObj: Object,
-    odata: (odata: OData) => string,
-    odata_count: ($filter: string) => string
+    params: Object,
+    queryObj: OData,
+    odata: (odata: OData, paramsWhereClaue: string) => string,
+    odata_count: ($filter: string, paramsWhereClaue: string) => string
   ): {
     countQuery: string;
     odataQuery: string;

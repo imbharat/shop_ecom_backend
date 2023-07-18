@@ -10,6 +10,7 @@ Users.init(
   {
     user_id: {
       type: DataTypes.INTEGER,
+      autoIncrement: true,
       primaryKey: true,
     },
     user_name: {
@@ -41,6 +42,15 @@ Users.init(
     is_admin: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
+      defaultValue: false,
+    },
+    created_by: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    modified_by: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
     },
     business_id: {
       type: DataTypes.INTEGER,
@@ -49,6 +59,9 @@ Users.init(
   },
   {
     sequelize,
+    underscored: true,
     modelName: "users",
   }
 );
+
+Users.sync();

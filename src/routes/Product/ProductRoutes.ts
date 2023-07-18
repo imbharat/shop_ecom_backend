@@ -13,6 +13,10 @@ productRouter.post("/", productController.add);
 
 productRouter.post("/import", productController.import);
 
+productRouter.post("/bulksell", productController.bulksell);
+
+productRouter.post("/bulkmove", productController.bulkmove);
+
 productRouter.put("/:product_id", productController.update);
 
 productRouter.delete("/:product_id", productController.delete);

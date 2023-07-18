@@ -7,12 +7,12 @@ const vendorController = container.resolve(VendorController);
 
 vendorRouter.get("/", vendorController.get);
 
-vendorRouter.get("/:id", vendorController.getById);
+vendorRouter.get("/:vendor_id", vendorController.getById);
 
-vendorRouter.post("/:id", vendorController.add);
+vendorRouter.post("/", vendorController.add);
 
-vendorRouter.put("/:id", vendorController.update);
+vendorRouter.put("/:vendor_id", vendorController.update);
 
-vendorRouter.delete("/:id", vendorController.delete);
+vendorRouter.delete("/:vendor_id", vendorController.delete);
 
 export default vendorRouter;

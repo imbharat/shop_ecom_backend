@@ -1,6 +1,6 @@
 type ImportProducts = {
   product_name: string;
-  price: number;
+  cost_price: number;
   imei: string;
   barcode: string;
   vendor: string;
