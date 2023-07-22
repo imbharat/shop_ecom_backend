@@ -11,6 +11,7 @@ import { injectable } from "tsyringe";
 import sequelize from "../entities/init/Init";
 import IBaseData from "../interfaces/data-interfaces/IBaseData";
 import BaseModel from "../models/BaseModel";
+import { Col, Fn, Literal } from "sequelize/types/utils";
 
 @injectable()
 export default class BaseData<T extends Model> implements IBaseData<T> {
@@ -63,11 +64,18 @@ export default class BaseData<T extends Model> implements IBaseData<T> {
     });
   };
   update = async (
+    values: {
+      [key in keyof Attributes<Model>]?:
+        | Attributes<Model>[key]
+        | Fn
+        | Col
+        | Literal;
+    },
     options: UpdateOptions<Attributes<Model>>,
     transaction?: Sequelize.Transaction
   ): Promise<[affectedCount: number, affectedRows: T[]]> => {
-    const { fields, where } = options;
-    return await this.model.update(fields, {
+    const { where } = options;
+    return await this.model.update(values, {
       where,
       transaction,
       returning: true,

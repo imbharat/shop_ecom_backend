@@ -9,7 +9,7 @@ export default interface IProductData extends IBaseData<Products> {
     products: ImportProducts[],
     transaction?: Sequelize.Transaction
   ) => Promise<Products[]>;
-  bulkupdate: (
+  bulkUpdate: (
     products: BulkUpdateProducts[],
     transaction?: Sequelize.Transaction
   ) => Promise<Products[]>;

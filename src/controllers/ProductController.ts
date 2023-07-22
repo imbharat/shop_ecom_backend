@@ -9,6 +9,7 @@ import ImportProducts from "../models/ImportProducts";
 import BulkSellProducts from "../models/BulkSellProducts";
 import { SContext } from "../types/SContext";
 import BulkMoveProducts from "../models/BulkMoveProducts";
+import ReturnProducts from "../models/ReturnProducts";
 
 @autoInjectable()
 export default class ProductController extends BaseController {
@@ -33,27 +34,40 @@ export default class ProductController extends BaseController {
     return res.status(400).send(false);
   };
 
-  bulksell = async (req: Request, res: Response) => {
+  return = async (req: Request, res: Response) => {
+    const context: SContext = {
+      business_id: 1,
+      user_id: 1,
+    };
+    const products: ReturnProducts = req?.body;
+    if (products?.product_id?.length) {
+      await this.iProductService.return(context, products);
+      return res.status(200).send(true);
+    }
+    return res.status(400).send(false);
+  };
+
+  bulkSell = async (req: Request, res: Response) => {
     const context: SContext = {
       business_id: 1,
       user_id: 1,
     };
     const sell_products: BulkSellProducts[] = req?.body?.data;
     if (sell_products?.length) {
-      await this.iProductService.bulksell(context, sell_products);
+      await this.iProductService.bulkSell(context, sell_products);
       return res.status(200).send(true);
     }
     return res.status(400).send(false);
   };
 
-  bulkmove = async (req: Request, res: Response) => {
+  bulkMove = async (req: Request, res: Response) => {
     const context: SContext = {
       business_id: 1,
       user_id: 1,
     };
     const sell_products: BulkMoveProducts[] = req?.body?.data;
     if (sell_products?.length) {
-      await this.iProductService.bulkmove(context, sell_products);
+      await this.iProductService.bulkMove(context, sell_products);
       return res.status(200).send(true);
     }
     return res.status(400).send(false);

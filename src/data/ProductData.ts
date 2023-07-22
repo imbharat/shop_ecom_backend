@@ -20,7 +20,7 @@ export default class ProductData
   ) => {
     return await Products.bulkCreate(products, { transaction: transaction });
   };
-  bulkupdate = async (
+  bulkUpdate = async (
     products: BulkUpdateProducts[],
     transaction?: Sequelize.Transaction
   ) => {

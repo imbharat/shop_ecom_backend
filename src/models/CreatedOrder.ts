@@ -4,7 +4,6 @@ type CreatedOrder = {
   order_id: number;
   quantity: number;
   net: number;
-  type: OrderType;
   customer: number;
   created_by: number;
   modified_by: number;

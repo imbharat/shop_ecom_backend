@@ -19,9 +19,6 @@ Orders.init(
     net: {
       type: DataTypes.FLOAT,
     },
-    type: {
-      type: DataTypes.INTEGER,
-    },
     customer: {
       type: DataTypes.INTEGER,
     },
@@ -42,6 +39,13 @@ Orders.init(
     sequelize,
     underscored: true,
     modelName: "orders",
+    indexes: [
+      {
+        name: "oid_business",
+        unique: true,
+        fields: ["order_id", "business_id"],
+      },
+    ],
   }
 );
 

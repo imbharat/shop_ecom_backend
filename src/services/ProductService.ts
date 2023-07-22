@@ -35,6 +35,7 @@ import {
   ILocationService,
   ILocationServiceProivder,
 } from "../interfaces/service-interfaces/ILocationService";
+import ReturnProducts from "../models/ReturnProducts";
 
 @injectable()
 export default class ProductService
@@ -119,7 +120,114 @@ export default class ProductService
     }
   };
 
-  bulksell = async (context: SContext, sell_products: BulkSellProducts[]) => {
+  return = async (context: SContext, products: ReturnProducts) => {
+    let products_returned: Products[] = [];
+    try {
+      await sequelize.transaction(
+        async (transaction: Sequelize.Transaction) => {
+          //step 1: update products status to returned and get order id for those products
+          const [returned_count, returned_products] =
+            await this.iProductData.update(
+              {
+                status: ProductStatus.Returned,
+              },
+              {
+                where: CommanFunctions.addProps(
+                  {
+                    ...products,
+                    status: ProductStatus.Sold,
+                  },
+                  context,
+                  false
+                ),
+                transaction,
+              }
+            );
+
+          if (returned_count) {
+            //step 2: update orders
+            const orders_to_update: {
+              order_id?: {
+                quantity_to_reduce: number;
+                net_to_reduce: number;
+              };
+            } = {};
+
+            const order_ids = [];
+            returned_products.forEach((prod) => {
+              let oid = prod.getDataValue("order_id") as number;
+              let sell_price = prod.getDataValue("sell_price") as number;
+              let cost_price = prod.getDataValue("cost_price") as number;
+              if (oid in orders_to_update) {
+                const obj = orders_to_update[oid];
+                orders_to_update[oid] = {
+                  quantity_to_reduce: obj.quantity_to_reduce + 1,
+                  net_to_reduce: obj.net_to_reduce + (sell_price - cost_price),
+                };
+              } else {
+                orders_to_update[oid] = {
+                  quantity_to_reduce: 1,
+                  net_to_reduce: sell_price - cost_price,
+                };
+              }
+              order_ids.push(oid);
+            });
+
+            const model = [];
+            if (!!orders_to_update) {
+              const orders = await this.iOrderService.get(context, {
+                where: CommanFunctions.addProps(
+                  {
+                    order_id: order_ids,
+                  },
+                  context,
+                  false
+                ),
+              });
+
+              const order_map = orders.reduce(
+                (map, order) => (
+                  (map[order.getDataValue("order_id")] = {
+                    prevQ: order.getDataValue("quantity"),
+                    prevN: order.getDataValue("net"),
+                  }),
+                  map
+                ),
+                {}
+              );
+
+              for (let order in orders_to_update) {
+                const q = orders_to_update[order].quantity_to_reduce;
+                const n = orders_to_update[order].net_to_reduce;
+                const pq = order_map[order].prevQ;
+                const pn = order_map[order].prevN;
+                model.push(
+                  CommanFunctions.addProps(
+                    {
+                      order_id: order,
+                      quantity: pq - q,
+                      net: pn - n,
+                    },
+                    context,
+                    false
+                  )
+                );
+              }
+            }
+
+            await this.iOrderService.bulkUpdate(model);
+
+            products_returned = returned_products;
+          }
+        }
+      );
+      return products_returned;
+    } catch (ex) {
+      throw ex;
+    }
+  };
+
+  bulkSell = async (context: SContext, sell_products: BulkSellProducts[]) => {
     let products_sold: Products[] = [];
 
     try {
@@ -172,8 +280,6 @@ export default class ProductService
               {
                 quantity: sell_products.length,
                 net: order_net,
-                type:
-                  sell_products.length > 1 ? OrderType.Bulk : OrderType.Single,
                 customer: customer_id,
                 created_by: context.user_id,
                 modified_by: context.user_id,
@@ -199,7 +305,7 @@ export default class ProductService
                 context
               )
             );
-            products_sold = await this.iProductData.bulkupdate(
+            products_sold = await this.iProductData.bulkUpdate(
               model,
               transaction
             );
@@ -212,7 +318,7 @@ export default class ProductService
     }
   };
 
-  bulkmove = async (context: SContext, move_products: BulkMoveProducts[]) => {
+  bulkMove = async (context: SContext, move_products: BulkMoveProducts[]) => {
     let products_moved: Products[] = [];
 
     try {
@@ -272,7 +378,7 @@ export default class ProductService
               context
             )
           );
-          products_moved = await this.iProductData.bulkupdate(model);
+          products_moved = await this.iProductData.bulkUpdate(model);
         }
       }
       return products_moved;

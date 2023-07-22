@@ -1,5 +1,12 @@
 import { injectable, inject } from "tsyringe";
-import Sequelize, { FindOptions, Model, Op, where } from "sequelize";
+import Sequelize, {
+  Attributes,
+  FindOptions,
+  Model,
+  Op,
+  UpdateOptions,
+  where,
+} from "sequelize";
 import IODataParser, {
   IODataParserProivder,
 } from "../interfaces/common-interfaces/IODataParser";
@@ -9,9 +16,8 @@ import IBaseData, {
 import IBaseService from "../interfaces/service-interfaces/IBaseService";
 import { OData } from "../types/OData";
 import { SContext } from "../types/SContext";
-import BaseModel from "../models/BaseModel";
 import { CommanFunctions } from "../utils/CommanFunctions";
-import { ProductStatus } from "../enums/ProductStatus";
+import { Col, Fn, Literal } from "sequelize/types/utils";
 
 @injectable()
 export default class BaseService implements IBaseService {
@@ -69,24 +75,24 @@ export default class BaseService implements IBaseService {
     return result;
   };
   update = async (
-    condition: Object,
-    model: Object,
+    condition: UpdateOptions<Attributes<Model>>,
+    values: {
+      [key in keyof Attributes<Model>]?:
+        | Attributes<Model>[key]
+        | Fn
+        | Col
+        | Literal;
+    },
     context: SContext
   ): Promise<[affectedCount: number, affectedRows: Model<any, any>[]]> => {
-    const admin = true;
-    if (!admin) {
-    }
-    const where = CommanFunctions.addProps(
-      {
-        ...condition,
-      },
-      context,
-      false
-    );
-
-    const result = await this.iBaseData.update({
-      fields: model as any,
-      where,
+    const result = await this.iBaseData.update(values, {
+      where: CommanFunctions.addProps(
+        {
+          ...condition,
+        },
+        context,
+        false
+      ),
     });
     return result;
   };

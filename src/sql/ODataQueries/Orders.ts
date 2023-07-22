@@ -8,7 +8,6 @@ LEFT JOIN customers ON customers.customer_id = orders.customer
 
 const OrderODataExport = `SELECT orders.order_id AS order_id,
 orders.net AS net,
-orders.type AS type,
 customers.customer_name AS customer,
 users_created_by.user_name AS created_by,
 users_modified_by.user_name AS modified_by,
