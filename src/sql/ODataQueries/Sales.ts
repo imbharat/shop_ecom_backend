@@ -27,8 +27,8 @@ products.imei AS imei,
 physical_qc.qc_name AS physical_qc,
 screen_qc.qc_name AS screen_qc,
 products.status AS status,
-orders.created_by AS sold_by,
-orders.created_at AS sold_on,
+users.user_name AS sold_by,
+orders.created_at AS sold_on
 ${SalesODataCommon}`;
 
 export const saleODataCount = ($filter: string) => `

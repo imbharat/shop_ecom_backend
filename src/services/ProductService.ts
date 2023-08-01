@@ -116,7 +116,7 @@ export default class ProductService
       );
       return products_added;
     } catch (ex) {
-      throw ex;
+      console.log(ex);
     }
   };
 
@@ -223,7 +223,7 @@ export default class ProductService
       );
       return products_returned;
     } catch (ex) {
-      throw ex;
+      console.log(ex);
     }
   };
 
@@ -314,7 +314,7 @@ export default class ProductService
       }
       return products_sold;
     } catch (ex) {
-      throw ex;
+      console.log(ex);
     }
   };
 
@@ -383,7 +383,7 @@ export default class ProductService
       }
       return products_moved;
     } catch (ex) {
-      throw ex;
+      console.log(ex);
     }
   };
 }

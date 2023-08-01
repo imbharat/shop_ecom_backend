@@ -31,6 +31,7 @@ export default class BaseData<T extends Model> implements IBaseData<T> {
     const result = odataQuery
       ? await sequelize.query(odataQuery, {
           type: QueryTypes.SELECT,
+          model: this.model,
         })
       : [];
     return {

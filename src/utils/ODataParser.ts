@@ -11,6 +11,7 @@ export default class ODataParser implements IODataParser {
     $orderby: "",
     $top: "",
     $skip: "",
+    $count: true,
   };
 
   OperatorMap = Object.freeze({
@@ -24,9 +25,9 @@ export default class ODataParser implements IODataParser {
     ge: ">=",
     like_pre: "LIKE '%",
     like_post: "%'",
+    includes_pre: "IN (",
+    includes_post: ")",
   });
-
-  constructor() {}
 
   parseToSQL = (
     params,
@@ -41,6 +42,7 @@ export default class ODataParser implements IODataParser {
       $orderby: "",
       $top: "",
       $skip: "",
+      $count: true,
     };
     //route params to be added as where clause
     let paramsWhereClaue = "";
@@ -85,9 +87,15 @@ export default class ODataParser implements IODataParser {
     if (!!query.$skip) {
       this.odata.$skip = query.$skip;
     }
+    // count
+    if (!!query.$count) {
+      this.odata.$count = query.$count === "true";
+    }
 
     return {
-      countQuery: odata_count?.(this.odata.$filter, paramsWhereClaue),
+      countQuery: this.odata.$count
+        ? odata_count?.(this.odata.$filter, paramsWhereClaue)
+        : "",
       odataQuery: odata?.(this.odata, paramsWhereClaue),
     };
   };
@@ -163,6 +171,13 @@ export default class ODataParser implements IODataParser {
             where = `${where} ${this.operator("like_pre")}`;
             where = this.parseSQLWhere(filter.args[1], where, false);
             where += `${this.operator("like_post")})`;
+            break;
+          case "includes":
+            where += `(`;
+            where = this.parseSQLWhere(filter.args[0], where, false);
+            where = `${where} ${this.operator("includes_pre")}`;
+            where = this.parseSQLWhere(filter.args[1], where, false);
+            where += `${this.operator("includes_post")})`;
             break;
         }
         break;

@@ -4,4 +4,5 @@ export type OData = {
   $top: string;
   $filter: string;
   $orderby: string;
+  $count: boolean;
 };

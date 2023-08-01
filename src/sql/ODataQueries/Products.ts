@@ -1,6 +1,21 @@
 import { ProductStatus } from "../../enums/ProductStatus";
 import { OData } from "../../types/OData";
 
+const SelectMin = `products.product_id AS product_id, 
+products.product_name AS product_name,
+products.imei AS imei,
+products.barcode AS barcode,
+products.cost_price AS cost_price, 
+null AS sell_price, 
+types.type_name AS type,
+categories.category_name AS category,
+vendors.vendor_name AS vendor,
+physical_qc.qc_name AS physical_qc,
+screen_qc.qc_name AS screen_qc,
+locations.location_name AS location,
+products.status AS status
+`;
+
 const ProductODataCommon = `FROM products 
 INNER JOIN users users_created_by ON users_created_by.user_id = products.created_by 
 INNER JOIN users users_modified_by ON users_modified_by.user_id = products.modified_by 
@@ -12,20 +27,8 @@ LEFT JOIN types ON types.type_id = products.type
 LEFT JOIN categories ON categories.category_id = products.category
 WHERE products.status IS DISTINCT FROM ${ProductStatus.Sold}`;
 
-const ProductODataExport = `SELECT products.product_id AS product_id, 
-products.product_name AS product_name,
-products.imei AS imei,
-products.barcode AS barcode,
-products.cost_price AS cost_price, 
-products.sell_price AS sell_price, 
+const ProductODataExport = `SELECT ${SelectMin},
 null AS customer_name,
-types.type_name AS type,
-categories.category_name AS category,
-vendors.vendor_name AS vendor,
-physical_qc.qc_name AS physical_qc,
-screen_qc.qc_name AS screen_qc,
-locations.location_name AS location,
-products.status AS status,
 users_created_by.user_name AS created_by,
 users_modified_by.user_name AS modified_by,
 products.created_at AS created_on,
@@ -39,7 +42,7 @@ export const productODataCount = ($filter: string) => `
 
 export const productOData = (odata: OData) => {
   const { $select, $filter, $orderby, $skip, $top } = odata;
-  return `SELECT ${!!$select ? $select : `*`} ${ProductODataCommon} 
+  return `SELECT ${!!$select ? $select : SelectMin} ${ProductODataCommon} 
     ${!!$filter ? `AND ${$filter}` : ``}
     ${
       !!$orderby
