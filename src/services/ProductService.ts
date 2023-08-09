@@ -36,6 +36,7 @@ import {
   ILocationServiceProivder,
 } from "../interfaces/service-interfaces/ILocationService";
 import ReturnProducts from "../models/ReturnProducts";
+import AddEditProduct from "../models/AddEditProduct";
 
 @injectable()
 export default class ProductService
@@ -63,7 +64,10 @@ export default class ProductService
     this.iLocationService = iLocationService;
   }
 
-  import = async (context: SContext, products: ImportProducts[]) => {
+  import = async (
+    context: SContext,
+    products: ImportProducts[] | AddEditProduct[]
+  ) => {
     let products_added: Products[] = [];
 
     try {
